@@ -14,7 +14,6 @@ set(exec mandelbrot)
 LIST(APPEND mandelbrot_src_files
   ${src_dir}/main.c
   ${src_dir}/mandelbrot.c
-  ${src_dir}/mandelbrot-avx512.c
 )
 
 if(MANDELBROT_USE_AVX512)
