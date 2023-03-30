@@ -15,7 +15,6 @@ LIST(APPEND mandelbrot_src_files
   ${src_dir}/main.c
   ${src_dir}/mandelbrot.c
   ${src_dir}/mandelbrot-avx512.c
-  ${cuda_dir}/mandelbrot.cu
 )
 
 if(MANDELBROT_USE_AVX512)
