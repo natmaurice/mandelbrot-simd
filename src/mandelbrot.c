@@ -39,7 +39,7 @@ void mandelbrot_scalar(int32_t** mat, int nrl, int nrh, int ncl, int nch,
     }    
 }
 
-void mandelbrot_parallle_scalar(int32_t** mat, int nrl, int nrh, int ncl, int nch,
+void mandelbrot_parallel_scalar(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 		       float minx, float miny, float maxx, float maxy, int max_iterations) {
 
     int width = nch - ncl + 1;
