@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(ProjectName mandelbrot)
 project(mandelbrot VERSION 0.1
-  LANGUAGES C CUDA)
+  LANGUAGES C)
 
 set(src_dir ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(cuda_dir ${CMAKE_CURRENT_SOURCE_DIR}/cuda)
