@@ -1,0 +1,5 @@
+-Ilib/nrc2/include
+-std=c11
+-Wall
+-Wextra
+-march=native
