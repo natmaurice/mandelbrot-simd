@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
     
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts_start);
     
-    mandelbrot_scalar(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
+    mandelbrot_parallel_scalar(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
     //mandelbrot_avx512(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);        
     //mandelbrot_avx512_lu2(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);    
     //mandelbrot_avx512_lu2_pl(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);    
