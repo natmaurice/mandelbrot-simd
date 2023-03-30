@@ -24,8 +24,9 @@
 #endif // __AVX512F__
 
 
+#ifdef MANDELBROT_USE_CUDA
 #include "mandelbrot-cuda.h"
-
+#endif // MANDELBROT_USE_CUDA
 
 void color_image(rgb8** rgbmat, int32_t** it_mat, int nrl, int nrh, int ncl, int nch, int max_iteration) {
 
@@ -78,7 +79,7 @@ int main(int argc, char** argv) {
     
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts_start);
     
-    //mandelbrot_scalar(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
+    mandelbrot_scalar(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
     //mandelbrot_avx512(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);        
     //mandelbrot_avx512_lu2(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);    
     //mandelbrot_avx512_lu2_pl(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);    
@@ -86,7 +87,7 @@ int main(int argc, char** argv) {
     //mandelbrot_avx512_lu4_pl(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);    
     //mandelbrot_parallel_avx512(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
     //mandelbrot_parallel_avx512_lu4(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
-    mandelbrot_cuda(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
+    //mandelbrot_cuda(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
     //mandelbrot_cuda_v2(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
     //mandelbrot_cuda_lu2(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
     

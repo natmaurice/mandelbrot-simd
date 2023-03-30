@@ -29,7 +29,6 @@ if(MANDELBROT_USE_CUDA)
     ${cuda_dir}/mandelbrot.cu
   )
 
-  include_directories(${cuda_dir})
 endif()
 
 add_subdirectory(${lib_dir}/nrc2)
@@ -38,7 +37,14 @@ find_package(OpenMP REQUIRED)
 add_compile_options("${OpenMP_C_FLAGS}")
 
 
-include_directories(${inc_dir})
-
 add_executable(${exec} ${mandelbrot_src_files})
+
+
+target_include_directories(${exec} PRIVATE ${inc_dir})
+if(MANDELBROT_USE_CUDA)
+  target_include_directories(${exec} PUBLIC ${cuda_dir})
+  target_compile_definitions(${exec} PUBLIC -DMANDELBROT_USE_CUDA)
+endif()
+
+
 target_link_libraries(${exec} PUBLIC nrc-slib ${OpenMP_C_LIBRARIES})
