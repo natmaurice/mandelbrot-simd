@@ -57,7 +57,7 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 		float32x4_t tot = vaddq_f32(x2, y2);
 		uint32x4_t vmask = vcleq_f32(tot, four);
 
-		int cnt;
+		unsigned cnt;
 		cnt = vgetq_lane_u8(vcntq_u8(vreinterpretq_u8_u64(vmask)), 0); // not efficient
 		
 		vit = vaddq_u32(vit, vandq_u32(vmask, vdupq_n_u32(1)));
@@ -65,7 +65,7 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 		    break;
 		}
 	    }
-	    vst1q_s32(line + col, vreinterpretq_s8_u8(vit)); // Number of iterations should be positive and lower than 2**31
+	    vst1q_s32(line + col, vreinterpretq_s32_u32(vit)); // Number of iterations should be positive and lower than 2**31
 	    
 	    vx0 = vaddq_f32(vx0, vstepx);
 	}
