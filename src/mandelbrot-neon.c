@@ -57,8 +57,8 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 		float32x4_t tot = vaddq_f32(x2, y2);
 		uint32x4_t vmask = vcleq_f32(tot, four);
 
-		unsigned cnt;
-		cnt = vgetq_lane_u8(vcntq_u8(vreinterpretq_u8_u64(vmask)), 0); // not efficient
+		uint8_t cnt;
+		cnt = vgetq_lane_u8(vcntq_u8(vreinterpretq_u8_u32(vmask)), 0); // not efficient but should work
 		
 		vit = vaddq_u32(vit, vandq_u32(vmask, vdupq_n_u32(1)));
 		if (!cnt) {
