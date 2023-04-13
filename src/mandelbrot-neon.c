@@ -15,7 +15,7 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
     const float stepx = (maxx - minx) / width;
     const float stepy = (maxy - miny) / height;
 
-    const alignas(16) float Fdata[] = {0.0, 1.0, 2.0, 3.0};
+    const _Alignas(16) float Fdata[] = {0.0, 1.0, 2.0, 3.0};
     
     float32x4_t vstepx = vdupq_n_f32(stepx);
     const float32x4_t vj = vld1q_f32(Fdata);
@@ -28,7 +28,7 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 
 	float32x4_t vx0 = vaddq_f32(vx0, vminx);
 	
-	const float y0  miny + row * stepy;
+	const float y0 = miny + row * stepy;
 	for (int col = ncl; col < nch; col += 16) {
 	    const float x0 = minx + col * stepx;
 
@@ -37,13 +37,13 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 	    float32x4_t y = vdupq_n_f32(0.0);
 	    float32x4_t x2 = vdupq_n_f32(0.0);
 	    float32x4_t y2 = vdupq_n_f32(0.0);
-	    uint32x4_t vit = vdupq_n_i32(0);
+	    uint32x4_t vit = vdupq_n_u32(0);
 
 	    const float32x4_t two = vdupq_n_f32(2.0);
 	    const float32x4_t four = vdupq_n_f32(4.0);
-	    const uint32x4_t incr1i = vdupq_n_i32(1);
+	    const uint32x4_t incr1i = vdupq_n_u32(1);
 
-	    for (int it = 0; it < max_iterations; i++) {
+	    for (int it = 0; it < max_iterations; it++) {
 
 		// y = 2 * x * y + y0
 		y = vaddq_f32(vmulq_f32(two, vmulq_f32(x, y)), vy0);
@@ -58,14 +58,14 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 		uint32x4_t vmask = vcleq_f32(tot, four);
 
 		int cnt;
-		cnt = vgetq_lane_u8(vcntq_u8(vreinterpret_cast_u8_u64(vmask)), 0); // not efficient
+		cnt = vgetq_lane_u8(vcntq_u8(vreinterpretq_u8_u64(vmask)), 0); // not efficient
 		
 		vit = vaddq_u32(vit, vandq_u32(vmask, vdupq_n_u32(1)));
 		if (!cnt) {
 		    break;
 		}
 	    }
-	    vst1q_u32(line + col, vit);
+	    vst1q_s32(line + col, vreinterpretq_s8_u8(vit)); // Number of iterations should be positive and lower than 2**31
 	    
 	    vx0 = vaddq_f32(vx0, vstepx);
 	}
