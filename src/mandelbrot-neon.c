@@ -15,13 +15,13 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
     const float stepx = (maxx - minx) / width;
     const float stepy = (maxy - miny) / height;
 
-    alignas(16) const float Fdata[] = {0.0, 1.0, 2.0, 3.0};
+    const alignas(16) float Fdata[] = {0.0, 1.0, 2.0, 3.0};
     
-    float32x4_t vincrx = vdupq_n_f32(stepx);
-    float32x4_t vj = vld1q_f32(Fdata);
-    float32x4_t vminx = vdupq_f32(minx);    
+    float32x4_t vstepx = vdupq_n_f32(stepx);
+    const float32x4_t vj = vld1q_f32(Fdata);
+    const float32x4_t vminx = vdupq_n_f32(minx);    
     
-    vincrx = vmulq_f32(vincrx, vj);
+    const float32x4_t vincrx = vmulq_f32(vstepx, vj);
     
     for (int row = nrl; row <= nrh; row++) {
 	int32_t* restrict line = mat[row];
@@ -32,16 +32,16 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 	for (int col = ncl; col < nch; col += 16) {
 	    const float x0 = minx + col * stepx;
 
-	    float32x4_t vy0 = vdupq_f32(y0);
-	    float32x4_t x = vdupq_f32(0.0);
-	    float32x4_t y = vdupq_f32(0.0);
-	    float32x4_t x2 = vdupq_f32(0.0);
-	    float32x4_t y2 = vdupq_f32(0.0);
-	    uint32x4_t vit = vdupq_i32(0);
+	    float32x4_t vy0 = vdupq_n_f32(y0);
+	    float32x4_t x = vdupq_n_f32(0.0);
+	    float32x4_t y = vdupq_n_f32(0.0);
+	    float32x4_t x2 = vdupq_n_f32(0.0);
+	    float32x4_t y2 = vdupq_n_f32(0.0);
+	    uint32x4_t vit = vdupq_n_i32(0);
 
-	    const float32x4_t two = vdupq_f32(2.0);
-	    const float32x4_t four = vdupq_f32(4.0);
-	    const uint32x4_t incr1i = vdupq_i32(1);
+	    const float32x4_t two = vdupq_n_f32(2.0);
+	    const float32x4_t four = vdupq_n_f32(4.0);
+	    const uint32x4_t incr1i = vdupq_n_i32(1);
 
 	    for (int it = 0; it < max_iterations; i++) {
 
@@ -55,10 +55,10 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 		y2 = vmulq_f32(y, y); // y^2
 
 		float32x4_t tot = vaddq_f32(x2, y2);
-		uint32x4_t vmask = vcle_f32(tot, four);
+		uint32x4_t vmask = vcleq_f32(tot, four);
 
 		int cnt;
-		cnt = vget_lane_u8(vcnt_u8(vreinterpret_cast_u8_u64(vmask))); // not efficient
+		cnt = vgetq_lane_u8(vcntq_u8(vreinterpret_cast_u8_u64(vmask)), 0); // not efficient
 		
 		vit = vaddq_u32(vit, vandq_u32(vmask, vdupq_n_u32(1)));
 		if (!cnt) {
