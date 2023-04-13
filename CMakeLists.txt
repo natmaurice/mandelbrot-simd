@@ -22,6 +22,12 @@ if(MANDELBROT_USE_AVX512)
   )
 endif()
 
+if(MANDELBROT_USE_NEON)
+  LIST(APPEND mandelbrot_src_files
+    ${src_dir}/mandelbrot-neon.c
+  )
+endif()
+
 if(MANDELBROT_USE_CUDA)
   LIST(APPEND mandelbrot_src_files
     ${cuda_dir}/mandelbrot.cu
