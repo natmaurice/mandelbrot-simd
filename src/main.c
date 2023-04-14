@@ -19,9 +19,17 @@
 
 #include "mandelbrot.h"
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__) && defined(MANDELBROT_USE_AVX512)
 #include "mandelbrot-avx512.h"
 #endif // __AVX512F__
+
+#if defined(__ARM_NEON) && defined(MANDELBROT_USE_NEON)
+#include "mandelbrot-neon.h"
+#endif // __ARM_NEON
+
+#ifndef MANDELBROT_FUN
+#define MANDELBROT_FUN mandelbrot_scalar
+#endif // MANDELBROT_FUN
 
 
 #ifdef MANDELBROT_USE_CUDA
@@ -55,9 +63,9 @@ void color_image(rgb8** rgbmat, int32_t** it_mat, int nrl, int nrh, int ncl, int
 int main(int argc, char** argv) {
 
     int nrl = 0;
-    int nrh = 8191;
+    int nrh = 4095;
     int ncl = 0;
-    int nch = 8191;
+    int nch = 4095;
     
     int32_t** it_mat = si32matrix(nrl, nrh, ncl, nch);
     rgb8** rgbmat = rgb8matrix(nrl, nrh, ncl, nch);
@@ -66,7 +74,7 @@ int main(int argc, char** argv) {
     const float MAXX = 0.47;
     const float MINY = -1.12;
     const float MAXY = 1.12;
-    const int MAX_ITERATIONS = 500;
+    const int MAX_ITERATIONS = 50;
 
     
     omp_set_num_threads(16);
@@ -78,8 +86,8 @@ int main(int argc, char** argv) {
     //mandelbrot_scalar(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
     
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts_start);
-    
-    mandelbrot_parallel_scalar(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
+
+    MANDELBROT_FUN(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);
     //mandelbrot_avx512(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);        
     //mandelbrot_avx512_lu2(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);    
     //mandelbrot_avx512_lu2_pl(it_mat, nrl, nrh, ncl, nch, MINX, MINY, MAXX, MAXY, MAX_ITERATIONS);    

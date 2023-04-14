@@ -50,5 +50,13 @@ if(MANDELBROT_USE_CUDA)
   target_compile_definitions(${exec} PUBLIC -DMANDELBROT_USE_CUDA)
 endif()
 
+if(MANDELBROT_USE_AVX512)
+  target_compile_definitions(${exec} PUBLIC -DMANDELBROT_USE_AVX512)
+endif()
+
+if(MANDELBROT_USE_NEON)
+  target_compile_definitions(${exec} PUBLIC -DMANDELBROT_USE_NEON)
+endif()
+
 
 target_link_libraries(${exec} PUBLIC nrc-slib ${OpenMP_C_LIBRARIES})
