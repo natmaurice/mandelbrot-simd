@@ -29,10 +29,12 @@ if(MANDELBROT_USE_NEON)
 endif()
 
 if(MANDELBROT_USE_CUDA)
+
+  enable_language(CUDA)
+  
   LIST(APPEND mandelbrot_src_files
     ${cuda_dir}/mandelbrot.cu
   )
-
 endif()
 
 add_subdirectory(${lib_dir}/nrc2)
@@ -58,5 +60,8 @@ if(MANDELBROT_USE_NEON)
   target_compile_definitions(${exec} PUBLIC -DMANDELBROT_USE_NEON)
 endif()
 
+if(MANDELBROT_FUN)
+  target_compile_definitions(${exec} PUBLIC -DMANDELBROT_FUN=${MANDELBROT_FUN})
+endif()
 
 target_link_libraries(${exec} PUBLIC nrc-slib ${OpenMP_C_LIBRARIES})
