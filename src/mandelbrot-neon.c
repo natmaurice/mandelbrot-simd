@@ -60,8 +60,8 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 		uint32x4_t vmask = vcleq_f32(tot, four);
 
 		uint8_t mask;
-		uint8x32_t vperm = vtbl1q_u8(vreinterpret_u8_u32(vmask, vshufidx)); // Put first byte of each element into first 32-bits
-		mask = vgetq_lane_u32(vreinterpret_u32_u8(vperm)); // Get first element
+		uint8x16_t vperm = vqtbl1q_u8(vreinterpret_u8_u32(vmask), vshufidx); // Put first byte of each element into first 32-bits
+		mask = vgetq_lane_u32(vreinterpret_u32_u8(vperm), 0); // Get first element
 				
 		vit = vaddq_u32(vit, vandq_u32(vmask, vdupq_n_u32(1)));
 		if (!mask) {
