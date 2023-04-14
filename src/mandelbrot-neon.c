@@ -16,6 +16,8 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
     const float stepy = (maxy - miny) / height;
 
     const _Alignas(16) float Fdata[] = {0.0, 1.0, 2.0, 3.0};
+    const _Alignas(16) uint8_t Shuf8[16] = {0, 4, 8, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    const uint8x16_t vshufidx = vld1q_u8(Shuf8);
     
     float32x4_t vstepx = vdupq_n_f32(stepx);
     const float32x4_t vj = vld1q_f32(Fdata);
@@ -57,11 +59,12 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 		float32x4_t tot = vaddq_f32(x2, y2);
 		uint32x4_t vmask = vcleq_f32(tot, four);
 
-		uint8_t cnt;
-		cnt = vgetq_lane_u8(vcntq_u8(vreinterpretq_u8_u32(vmask)), 0); // not efficient but should work
-		
+		uint8_t mask;
+		uint8x32_t vperm = vtbl1q_u8(vreinterpret_u8_u32(vmask, vshufidx)); // Put first byte of each element into first 32-bits
+		mask = vgetq_lane_u32(vreinterpret_u32_u8(vperm)); // Get first element
+				
 		vit = vaddq_u32(vit, vandq_u32(vmask, vdupq_n_u32(1)));
-		if (!cnt) {
+		if (!mask) {
 		    break;
 		}
 	    }
