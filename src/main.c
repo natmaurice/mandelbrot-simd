@@ -36,6 +36,10 @@
 #include "mandelbrot-cuda.h"
 #endif // MANDELBROT_USE_CUDA
 
+#define STR(x) #x
+#define XSTR(x) STR(x)
+
+
 void color_image(rgb8** rgbmat, int32_t** it_mat, int nrl, int nrh, int ncl, int nch, int max_iteration) {
 
     const int r = 0;
@@ -63,9 +67,9 @@ void color_image(rgb8** rgbmat, int32_t** it_mat, int nrl, int nrh, int ncl, int
 int main(int argc, char** argv) {
 
     int nrl = 0;
-    int nrh = 4095;
+    int nrh = 1023;
     int ncl = 0;
-    int nch = 4095;
+    int nch = 1023;
     
     int32_t** it_mat = si32matrix(nrl, nrh, ncl, nch);
     rgb8** rgbmat = rgb8matrix(nrl, nrh, ncl, nch);
@@ -76,6 +80,12 @@ int main(int argc, char** argv) {
     const float MAXY = 1.12;
     const int MAX_ITERATIONS = 50;
 
+    int height = (nrh - nrl + 1);
+    int width = (nch - ncl + 1);
+    
+    printf("Executing %s: width = %d, height = %d, iterations = %d\n", XSTR(MANDELBROT_FUN),
+	   width, height, MAX_ITERATIONS);
+    
     
     omp_set_num_threads(16);
     //set_ui8matrix(mat, nrl, nrh, ncl, nch, 255);

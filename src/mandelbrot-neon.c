@@ -16,23 +16,23 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
     const float stepy = (maxy - miny) / height;
 
     const _Alignas(16) float Fdata[] = {0.0, 1.0, 2.0, 3.0};
-    const _Alignas(16) uint8_t Shuf8[16] = {0, 4, 8, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    const _Alignas(16) uint8_t Shuf8[16] = {0, 4, 8, 12, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
     const uint8x16_t vshufidx = vld1q_u8(Shuf8);
     
-    float32x4_t vstepx = vdupq_n_f32(stepx);
+    const float32x4_t vstepx4 = vdupq_n_f32(4 * stepx);
+    const float32x4_t vstepx = vdupq_n_f32(stepx);
     const float32x4_t vj = vld1q_f32(Fdata);
-    const float32x4_t vminx = vdupq_n_f32(minx);    
+    const float32x4_t vminx = vdupq_n_f32(minx);
     
     const float32x4_t vincrx = vmulq_f32(vstepx, vj);
     
     for (int row = nrl; row <= nrh; row++) {
 	int32_t* restrict line = mat[row];
 
-	float32x4_t vx0 = vaddq_f32(vx0, vminx);
+	float32x4_t vx0 = vaddq_f32(vincrx, vminx);
 	
 	const float y0 = miny + row * stepy;
-	for (int col = ncl; col < nch; col += 16) {
-	    const float x0 = minx + col * stepx;
+	for (int col = ncl; col < nch; col += 4) {
 
 	    float32x4_t vy0 = vdupq_n_f32(y0);
 	    float32x4_t x = vdupq_n_f32(0.0);
@@ -59,7 +59,7 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 		float32x4_t tot = vaddq_f32(x2, y2);
 		uint32x4_t vmask = vcleq_f32(tot, four);
 
-		uint8_t mask;
+		uint32_t mask;
 		uint8x16_t vperm = vqtbl1q_u8(vreinterpretq_u8_u32(vmask), vshufidx); // Put first byte of each element into first 32-bits
 		mask = vgetq_lane_u32(vreinterpretq_u32_u8(vperm), 0); // Get first element
 				
@@ -70,7 +70,7 @@ void mandelbrot_neon(int32_t** mat, int nrl, int nrh, int ncl, int nch,
 	    }
 	    vst1q_s32(line + col, vreinterpretq_s32_u32(vit)); // Number of iterations should be positive and lower than 2**31
 	    
-	    vx0 = vaddq_f32(vx0, vstepx);
+	    vx0 = vaddq_f32(vx0, vstepx4);
 	}
 	
     }
