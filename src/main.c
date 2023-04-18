@@ -66,10 +66,18 @@ void color_image(rgb8** rgbmat, int32_t** it_mat, int nrl, int nrh, int ncl, int
 
 int main(int argc, char** argv) {
 
+    int width = 1024;
+    int height = 1024;
+    
+    if (argc > 3) {
+	width = atoi(argv[1]);
+	height = atoi(argv[2]);
+    }
+    
     int nrl = 0;
-    int nrh = 1023;
+    int nrh = height - 1;
     int ncl = 0;
-    int nch = 1023;
+    int nch = width - 1;
     
     int32_t** it_mat = si32matrix(nrl, nrh, ncl, nch);
     rgb8** rgbmat = rgb8matrix(nrl, nrh, ncl, nch);
@@ -79,9 +87,6 @@ int main(int argc, char** argv) {
     const float MINY = -1.12;
     const float MAXY = 1.12;
     const int MAX_ITERATIONS = 50;
-
-    int height = (nrh - nrl + 1);
-    int width = (nch - ncl + 1);
     
     printf("Executing %s: width = %d, height = %d, iterations = %d\n", XSTR(MANDELBROT_FUN),
 	   width, height, MAX_ITERATIONS);
